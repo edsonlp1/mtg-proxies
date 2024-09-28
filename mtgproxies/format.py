@@ -3,10 +3,21 @@ from __future__ import annotations
 
 
 def format_print(card_name: str | dict, set_id: str = None, collector_number: str = None) -> str:
-    if "name" in card_name:
-        card_name, set_id, collector_number = card_name["name"], card_name["set"], card_name["collector_number"]
+    # Si card_name es un diccionario
+    if isinstance(card_name, dict):
+        card_name_value = card_name.get("name", "UNKNOWN")  # Obtener el nombre de la carta
+        set_id = card_name.get("set", set_id or "UNKNOWN")  # Obtener el set o asignar 'UNKNOWN'
+        collector_number = card_name.get("collector_number", collector_number or "N/A")  # Obtener número de coleccionista
+    else:
+        # Si card_name es una cadena (no un diccionario), lo tratamos directamente
+        card_name_value = card_name
 
-    return f"'{card_name} ({set_id.upper()}) {collector_number}'"
+    # Si set_id sigue siendo None, le asignamos un valor por defecto
+    if set_id is None:
+        set_id = "UNKNOWN"
+
+    return f"'{card_name_value} ({set_id.upper()}) {collector_number}'"
+
 
 
 color_names = {

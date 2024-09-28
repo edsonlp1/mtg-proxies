@@ -53,6 +53,12 @@ if __name__ == "__main__":
         default=None,
         metavar="COLOR",
     )
+    parser.add_argument(
+        "--lang",
+        help="language code used for all cards (default: %(default)s)",
+        type=str,
+        default="es",
+    )
     parser.add_argument("--cropmarks", action=argparse.BooleanOptionalAction, default=True, help="add crop marks")
     parser.add_argument(
         "--faces",
@@ -63,7 +69,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Parse decklist
-    decklist = parse_decklist_spec(args.decklist)
+    decklist = parse_decklist_spec(args.decklist, args.lang)
 
     # Fetch scans
     images = fetch_scans_scryfall(decklist, faces=args.faces)
@@ -83,7 +89,7 @@ if __name__ == "__main__":
             cardsize=np.array([2.5, 3.5]) * 25.4 * args.scale,
             border_crop=args.border_crop,
             background_color=background_color,
-            cropmarks=args.cropmarks,
+            cropmarks=args.cropmarks
         )
     else:
         print_cards_matplotlib(

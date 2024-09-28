@@ -70,7 +70,7 @@ def get_print_warnings(card) -> list[str]:
     return warnings
 
 
-def validate_print(card_name: str, set_id: str, collector_number: str):
+def validate_print(card_name: str, set_id: str, collector_number: str, lang :str):
     """Validate a print against the Scryfall database.
 
     Assumes card name is valid.
@@ -81,7 +81,8 @@ def validate_print(card_name: str, set_id: str, collector_number: str):
     """
     warnings = []
 
-    if set_id is None:
+    card = scryfall.get_card(card_name, set_id, collector_number, lang)
+    if card is None:
         card = scryfall.recommend_print(card_name=card_name)
         # Warn for tokens, as they are not unique by name
         if card["layout"] in ["token", "double_faced_token"]:
@@ -89,17 +90,14 @@ def validate_print(card_name: str, set_id: str, collector_number: str):
                 ("WARNING", f"Tokens are not unique by name. Assuming '{card_name}' is a '{format_token(card)}'.")
             )
     else:
-        card = scryfall.get_card(card_name, set_id, collector_number)
-        if card is None:  # No exact match
-            # Find alternative print
-            card = scryfall.recommend_print(card_name=card_name)
-            warnings.append(
-                (
-                    "WARNING",
-                    f"Unable to find scan of {format_print(card_name, set_id, collector_number)}."
-                    + f" Using {format_print(card)} instead.",
-                )
+        print(f"card_name: {card_name}, set_id: {set_id}, collector_number: {collector_number}")
+        warnings.append(
+            (
+                "WARNING",
+                f"Unable to find scan of {format_print(card_name, set_id, collector_number)}."
+                + f" Using {format_print(card)} instead.",
             )
+        )
 
     # Warnings for low-quality scans
     quality_warnings = get_print_warnings(card)
